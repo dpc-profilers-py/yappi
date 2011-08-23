@@ -25,7 +25,9 @@
 
 #include "_ymem.h"
 
+#ifdef IS_PY3K
 PyDoc_STRVAR(_yappi__doc__, "Yet Another Python Profiler");
+#endif
 
 // module macros
 #define YSTRMOVEND(s) (*s += strlen(*s))
@@ -615,6 +617,7 @@ profile_event(PyObject *self, PyObject *args)
     if (!PyArg_ParseTuple(args, "OOO", &frame, &event, &arg)) {
         return NULL;
     }
+
 
     _ensure_thread_profiled(PyThreadState_GET());
     

@@ -40,10 +40,17 @@ tickcount(void)
 {
     struct timeval tv;
     long long rc;
-#ifdef GETTIMEOFDAY_NO_TZ
+#if (defined(_GNU_SOURCE) && defined(RUSAGE_THREAD))
+    struct rusage usage;
+
+    getrusage(RUSAGE_THREAD, &usage);
+    rc = (usage.ru_utime.tv_sec + usage.ru_stime.tv_sec);
+    rc = rc * 1000000 + (usage.ru_utime.tv_usec + usage.ru_stime.tv_usec);
+    return rc;
+#elif GETTIMEOFDAY_NO_TZ
     gettimeofday(&tv);
 #else
-gettimeofday(&tv, (struct timezone *)NULL);
+    gettimeofday(&tv, (struct timezone *)NULL);
 #endif
     rc = tv.tv_sec;
     rc = rc * 1000000 + tv.tv_usec;
